@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="icon" href="favicon-32.png" sizes="32x32">
+  <link rel="icon" href="favicon-128.png" sizes="128x128">
+  <link rel="icon" href="favicon-167.png" sizes="167x167">
+  <link rel="icon" href="favicon-192.png" sizes="192x192">
+
+  <title>WebPy URL Generator</title>
+
+  <style>
+    div {
+      margin: 0.5em 0em;
+    }
+    input[type=text] {
+        width: 40em;
+    }
+
+    #output {
+      border: solid 1px black;
+      margin: 1em 0em;
+      padding: 1em;
+    }
+    #errors {
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>WebPy URL Generator</h1>
+  </header>
+
+  <main>
+    <div>
+      <label>Config file URL (<a href="samples/config.json">Download Sample</a>)</label>
+      <input id="configURL" type="text" placeholder="URL to the configurations json file"></input>
+    </div>
+    <div>
+      <button id="gen">Generate URL</button>
+    </div>
+    <div id="output">
+      <div id="errors"></div>
+      <div id="results"></div>
+    </div>
+    <div>
+      <p>This page will help you generate a shareable URL that will automatically load a configurations json file.</p>
+      <p>
+        The json files MUST be hosted on a server that supports <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing (CORS)</a>.
+        Most hosting services DO NOT support this.
+      </p>
+      <p>
+        The only free service I know that supports this is Github.
+        You'll need to create a Github repository, upload your file there, then either obtain the link to the raw file or Github page (...see <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site">this page</a> for Github pages setup).
+      </p>
+      <p>
+        Alternatively, you can host the json files on your own server and configure it to allows CORS.
+        See <a href="https://enable-cors.org/server.html">this page</a> to learn how.
+        Your webserver must support https.
+      </p>
+      <p>
+        If you are hosting WebPy on your own server, change the first part of the generated URL accordingly.
+        If the json files are on the same site as your hosted Gears, you can safely ignore the CORS error.
+        You can also ignore the https error if you are hosting Gears on a http site.
+      </p>
+    </div>
+  </main>
+
+  <script>
+    let results = document.getElementById('results');
+    let errors = document.getElementById('errors');
+    let genBtn = document.getElementById('gen');
+
+    function errorOut(html) {
+      if (errors.innerHTML == '') {
+        errors.innerHTML = 'Errors detected. The generated URL may not work.<br>';
+      }
+      errors.innerHTML += '- ' + html + '<br>';
+    }
+
+    function resultsOut(html) {
+      results.innerHTML = html;
+    }
+
+    function isURL(url) {
+      try {
+        new URL(url);
+      } catch (e) {
+        return false;
+      }
+      return true;
+    }
+
+    function checkFetch(url, name) {
+      fetch(url, { mode: 'cors' })
+        .then(function(response) {
+          if (response.ok == false) {
+            response.text().then(function(text){
+              errorOut('Error fetching ' + name +' (' + text + ').');
+            });
+          }
+        })
+        .catch(function(e) {
+          errorOut('Failed to fetch ' + name + '. The server probably does not allow Cross-Origin Request Sharing.')
+        });
+    }
+
+    function isHTTPS(url) {
+      if (url.slice(0, 5) == 'https') {
+        return true;
+      }
+      return false;
+    }
+
+    genBtn.onclick = function() {
+      let configURL = document.getElementById('configURL').value.trim();
+
+      errors.innerHTML = '';
+
+      // At least one
+      if (! configURL) {
+        errorOut('No URLs provided');
+      }
+
+      // Check if valid URL
+      if (configURL && ! isURL(configURL)) {
+        errorOut('The provided config URL is not a valid URL');
+      }
+
+      // Check if is http
+      if (configURL && ! isHTTPS(configURL)) {
+        errorOut('Config URL must be served over https. WebPy uses https and browser security will not allow a mix of http and https.');
+      }
+
+      // Check CORS
+      if (configURL && isURL(configURL)) {
+        checkFetch(configURL, 'ConfigURL');
+      }
+
+      // All good. Generate URL
+      let URL = window.location.href.replace('genURL.html', 'editor.html') + '?';
+      if (configURL) {
+        URL += 'config=' + encodeURIComponent(configURL) + '&';
+      }
+      URL = URL.slice(0, -1)
+      resultsOut(
+        '<a href="'+ URL + '">' + URL + '</a>'
+      );
+    }
+  </script>
+</body>
+</html>

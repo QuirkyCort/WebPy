@@ -1,0 +1,11 @@
+{
+  "zipFiles": [
+    "https://files.aposteriori.com.sg/get/cCGC7pq9kN.zip"
+  ],
+  "pyscriptConfig": {
+    "files": {
+      "https://files.aposteriori.com.sg/get/4fJhkLNnRp.txt": "iris.data.txt",
+      "https://files.aposteriori.com.sg/get/kAxTHFWN5K.txt": "digits.txt"
+    }
+  }
+}
