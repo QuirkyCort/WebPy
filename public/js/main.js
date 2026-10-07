@@ -61,7 +61,12 @@ var main = new function() {
         self.config = data;
 
         if (self.config.code) {
-          self.fetchCode(self.config.code);
+          confirmDialog(
+            'This URL is configured to load code into the editor. Continuing will overwrite any unsaved work. Continue?',
+            function() {
+              self.fetchCode(self.config.code);
+            }
+          );
         }
 
         if (self.config.zipFiles) {
