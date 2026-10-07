@@ -60,8 +60,11 @@ var main = new function() {
       .then(data => {
         self.config = data;
 
+        if (self.config.code) {
+          self.fetchCode(self.config.code);
+        }
+
         if (self.config.zipFiles) {
-          console.log('fetch zips');
           self.fetchZipFiles(self.config.zipFiles);
         } else {
           self.configLoaded = true;
@@ -100,6 +103,16 @@ var main = new function() {
       runButton.disabled = false;
     }
 
+  };
+
+  this.fetchCode = async function(url) {
+    try {
+        let response = await fetch(url);
+        let zipBlob = await response.blob()
+        await self.loadCodeFromComputerZip(zipBlob);
+    } catch (error) {
+      toastMsg('Error fetching code: ' + error);
+    }
   };
 
   this.defaultSettings = function() {
@@ -301,10 +314,10 @@ var main = new function() {
     hiddenElement.type = 'file';
     hiddenElement.accept = 'application/zip,.zip';
     hiddenElement.dispatchEvent(new MouseEvent('click'));
-    hiddenElement.addEventListener('change', self.loadCodeFromComputerZip);
+    hiddenElement.addEventListener('change', e => {self.loadCodeFromComputerZip(e.target.files[0])});
   };
 
-  this.loadCodeFromComputerZip = function(e) {
+  this.loadCodeFromComputerZip = function(blob) {
     async function loadFiles(zip) {
       filesManager.deleteAll();
 
@@ -341,7 +354,7 @@ var main = new function() {
       self.tabClicked('navPython');
     }
 
-    JSZip.loadAsync(e.target.files[0])
+    JSZip.loadAsync(blob)
       .then(loadFiles)
       .catch(error => showErrorModal('Invalid code file (Must be a zip file containing a "main.py")'));
   }

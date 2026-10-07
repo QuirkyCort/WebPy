@@ -1,0 +1,35 @@
+// !!! WARNING! 
+// This file will not work because JSON does not support comments.
+// All comments must be removed before using this file as a configuration file.
+
+// Every item in this file is optional.
+
+{
+  // The URL to the zip file containing the code to be run.
+  // You can generate this zip file using the "Save code to your computer" button in the web app.
+  "code": "https://files.aposteriori.com.sg/get/6SjHKbFS6q.zip",
+
+  // An array of URLs to zip files containing additional files to be loaded into the Python filesystem.
+  // Each zip file will be unzipped in the root directory of the Python filesystem.
+  // Destination paths cannot be repeated! ie. you cannot have two zip files containing /foo/bar.txt.
+  "zipFiles": [
+    "https://files.aposteriori.com.sg/get/cCGC7pq9kN.zip"
+  ],
+
+  // Configurations for Pyscript.
+  // You can find more info here https://docs.pyscript.net/2026.7.3/user-guide/configuration/
+  "pyscriptConfig": {
+
+    // Packages to import from PyPI (https://pypi.org/)
+    "packages": ["numpy"],
+
+    // These files will be loaded to the Python filesystem
+    // The key is the URL to the file, and the value is the destination path in the Python filesystem.
+    // URL may be a data URL or a regular URL.
+    // Destination paths cannot be repeated!
+    "files": {
+      "https://files.aposteriori.com.sg/get/4fJhkLNnRp.txt": "iris.data.txt",
+      "https://files.aposteriori.com.sg/get/kAxTHFWN5K.txt": "digits.txt"
+    }
+  }
+}
