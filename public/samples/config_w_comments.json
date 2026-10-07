@@ -7,7 +7,7 @@
 {
   // The URL to the zip file containing the code to be run.
   // You can generate this zip file using the "Save code to your computer" button in the web app.
-  "code": "https://files.aposteriori.com.sg/get/6SjHKbFS6q.zip",
+  "code": "https://files.aposteriori.com.sg/get/FoGEvzKQ8i.zip",
 
   // An array of URLs to zip files containing additional files to be loaded into the Python filesystem.
   // Each zip file will be unzipped in the root directory of the Python filesystem.
