@@ -192,6 +192,8 @@ var main = new function() {
       e.stopPropagation();
 
       let menuItems = [
+        {html: 'Loaded Packages', line: false, callback: self.loadedPackages},
+        {html: 'Filesystem', line: true, callback: self.filesystemDisplay},
         {html: 'Zoom In (Ctrl + Scroll)', line: false, callback: self.zoomIn},
         {html: 'Zoom Out (Ctrl + Scroll)', line: false, callback: self.zoomOut},
         {html: 'Reset Zoom', line: false, callback: self.zoomReset},
@@ -199,6 +201,42 @@ var main = new function() {
 
       menuDropDown(self.$viewMenu, menuItems, {className: 'viewMenuDropDown'});
     }
+  };
+
+  this.loadedPackages = function(e) {
+    let body = 'None';
+    if (self.config.pyscriptConfig && self.config.pyscriptConfig.packages) {
+      body = String(self.config.pyscriptConfig.packages);
+    }
+
+    acknowledgeDialog({
+      title: 'Loaded Packages', 
+      message: body
+    });
+  };
+
+  this.filesystemDisplay = function(e) {
+    let files = Object.keys(filesManager.files);
+    files = files.concat(Object.values(main.zipFiles));
+    if (main.config.pyscriptConfig && main.config.pyscriptConfig.files) {
+      files = files.concat(Object.values(main.config.pyscriptConfig.files));
+    }
+
+    files.sort();
+
+    let body = 'None';
+    if (files.length > 0) {
+      body = '<ul>';
+      for (let f of files) {
+        body += '<li>' + f + '</li>';
+      }
+      body += '</ul>';
+    }
+
+    acknowledgeDialog({
+      title: 'Filesystem', 
+      message: body
+    });
   };
 
   this.zoomIn = function(e) {
